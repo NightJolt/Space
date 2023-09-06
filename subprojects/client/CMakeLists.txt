@@ -1,4 +1,4 @@
-project(projectname_client CXX)
+project(${CMAKE_PROJECT_NAME}_client CXX)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 

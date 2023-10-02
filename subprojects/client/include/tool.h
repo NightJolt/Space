@@ -6,6 +6,8 @@ namespace space {
 
 enum struct tool_mode_t {
     brush,
+    eraser,
+    eyedropper
 };
 
 struct tool_t {

@@ -34,6 +34,14 @@ namespace {
             if (ImGui::Button("G")) {
                 state.tool.mode = space::tool_mode_t::bucket;
             }
+
+            if (ImGui::Button("U")) {
+                state.tool.mode = space::tool_mode_t::rectangle;
+            }
+
+            if (ImGui::Button("SU")) {
+                state.tool.mode = space::tool_mode_t::rectangle_filled;
+            }
             
             ImGui::SameLine();
 

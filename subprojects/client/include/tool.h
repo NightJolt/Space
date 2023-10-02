@@ -4,11 +4,13 @@
 
 namespace space {
 
-enum struct tool_mode_t {
+enum struct tool_mode_t : uint32_t {
     brush,
     eraser,
     eyedropper,
-    bucket
+    bucket,
+    rectangle,
+    rectangle_filled,
 };
 
 struct tool_t {

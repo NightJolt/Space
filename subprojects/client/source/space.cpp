@@ -42,7 +42,7 @@ namespace {
 
         for (int x = 0; x < img.getSize().x; x++) {
             for (int y = 0; y < img.getSize().y; y++) {
-                state.canvas.set_texel({ x, y }, fun::rgb_t(img.getPixel(x, y)));
+                state.canvas.set_color({ x, y }, fun::rgb_t(img.getPixel(x, y)));
             }
         }
     }
@@ -63,6 +63,14 @@ namespace {
         space::shortcut::register_key(sf::Keyboard::G, []() {
             state.tool.mode = space::tool_mode_t::bucket;
         });
+
+        space::shortcut::register_key(sf::Keyboard::U, []() {
+            state.tool.mode = space::tool_mode_t::rectangle;
+        });
+
+        space::shortcut::register_key(sf::Keyboard::U, []() {
+            state.tool.mode = space::tool_mode_t::rectangle_filled;
+        }, true);
     }
 }
 
@@ -80,12 +88,15 @@ void space::update() {
     fun::render::window_t& window = fun::render::winmgr::get_main_window();
     window.move_world_view(fun::input::keyboard_2d() * window.get_zoom() * 50.f * fun::time::delta_time());
 
+    state.preview_canvas.clear();
+
     focus::update(state);
 
     shortcut::invoke();
     action::handle(state);
 
     window.draw_world(state.canvas, 0);
+    window.draw_world(state.preview_canvas, 1);
 
     interface::draw(state);
 }

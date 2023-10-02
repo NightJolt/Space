@@ -5,6 +5,6 @@
 namespace space::shortcut {
     typedef fun::fn_t<void()> callback_t;
 
-    void register_key(sf::Keyboard::Key key, callback_t callback);
+    void register_key(sf::Keyboard::Key, callback_t, bool = false);
     void invoke();
 }

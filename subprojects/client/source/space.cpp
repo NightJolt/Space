@@ -11,6 +11,7 @@
 #include "focus.h"
 #include "interface.h"
 #include "shortcut.h"
+#include "action.h"
 
 namespace {
     space::state_t state;
@@ -58,46 +59,10 @@ namespace {
         space::shortcut::register_key(sf::Keyboard::I, []() {
             state.tool.mode = space::tool_mode_t::eyedropper;
         });
-    }
 
-    void handle_action(fun::render::window_t& window) {
-        using enum space::tool_mode_t;
-
-        switch (state.tool.mode) {
-            case brush: {
-                if (fun::input::hold(sf::Mouse::Left)) {
-                    auto world_pos = window.get_mouse_world_position();
-                    auto grid_pos = fun::data::world_to_grid(world_pos, state.canvas.get_meshmap()->s_tile_size);
-
-                    state.canvas.set_texel(grid_pos, state.tool.color);
-                }
-
-                break;
-            }
-
-            case eraser: {
-                if (fun::input::hold(sf::Mouse::Left)) {
-                    auto world_pos = window.get_mouse_world_position();
-                    auto grid_pos = fun::data::world_to_grid(world_pos, state.canvas.get_meshmap()->s_tile_size);
-
-                    state.canvas.set_texel(grid_pos, fun::rgb::black);
-                }
-
-                break;
-            }
-
-            case eyedropper: {
-                if (fun::input::pressed(sf::Mouse::Left)) {
-                    auto world_pos = window.get_mouse_world_position();
-                    auto grid_pos = fun::data::world_to_grid(world_pos, state.canvas.get_meshmap()->s_tile_size);
-
-                    state.tool.color = state.canvas.get_texel(grid_pos);
-                    state.tool.mode = brush;
-                }
-
-                break;
-            }
-        }
+        space::shortcut::register_key(sf::Keyboard::G, []() {
+            state.tool.mode = space::tool_mode_t::bucket;
+        });
     }
 }
 
@@ -118,7 +83,7 @@ void space::update() {
     focus::update(state);
 
     shortcut::invoke();
-    handle_action(window);
+    action::handle(state);
 
     window.draw_world(state.canvas, 0);
 

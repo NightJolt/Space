@@ -30,6 +30,10 @@ namespace {
             if (ImGui::Button("I")) {
                 state.tool.mode = space::tool_mode_t::eyedropper;
             }
+
+            if (ImGui::Button("G")) {
+                state.tool.mode = space::tool_mode_t::bucket;
+            }
             
             ImGui::SameLine();
 

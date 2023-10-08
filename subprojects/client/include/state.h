@@ -13,6 +13,13 @@ struct state_t {
     tool_t tool;
 
     struct {
+        bool selecting = false;
+        bool selected = false;
+        fun::data::grid_pos_t start;
+        fun::data::grid_pos_t end;
+    } selection;
+
+    struct {
         struct {
             bool last_frame_active = false;
             fun::vec2f_t last_world_pos;

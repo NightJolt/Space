@@ -11,6 +11,7 @@ enum struct tool_mode_t : uint32_t {
     bucket,
     rectangle,
     rectangle_filled,
+    rectangular_selection
 };
 
 struct tool_t {

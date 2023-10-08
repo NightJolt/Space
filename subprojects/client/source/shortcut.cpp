@@ -3,28 +3,38 @@
 #include <FunEngine2D/core/include/input.h>
 
 namespace {
-    std::unordered_map<sf::Keyboard::Key, space::shortcut::callback_t> callbacks;
-    std::unordered_map<sf::Keyboard::Key, space::shortcut::callback_t> callbacks_shifted;
+    struct key_data_t {
+        sf::Keyboard::Key key;
+        space::shortcut::key_flags_t flags;
+    };
+
+    std::unordered_map<
+        key_data_t,
+        space::shortcut::callback_t,
+        decltype(
+            [] (key_data_t data) {
+                return fun::hash(fun::vec2i_t { int32_t { data.key }, data.flags });
+            }
+        ),
+        decltype(
+            [] (key_data_t a, key_data_t b) {
+                return a.key == b.key && a.flags == b.flags;
+            }
+        )
+    > callbacks;
 }
 
-void space::shortcut::register_key(sf::Keyboard::Key key, callback_t callback, bool shifted) {
-    if (shifted) {
-        callbacks_shifted[key] = callback;
-    } else {
-        callbacks[key] = callback;
-    }
+void space::shortcut::register_key(sf::Keyboard::Key key, callback_t callback, key_flags_t flags) {
+    callbacks[{ key, flags }] = callback;
 }
 
 void space::shortcut::invoke() {
-    for (auto& [key, callback] : callbacks) {
-        if (fun::input::pressed(key)) {
-            callback();
-        }
-    }
+    for (auto& [data, callback] : callbacks) {
+        if (!fun::input::pressed(data.key)) continue;
+        if ((data.flags & key_flags_t::control ? true : false) != fun::input::hold(sf::Keyboard::LControl)) continue;
+        if ((data.flags & key_flags_t::shift ? true : false) != fun::input::hold(sf::Keyboard::LShift)) continue;
+        if ((data.flags & key_flags_t::alt ? true : false) != fun::input::hold(sf::Keyboard::LAlt)) continue;
 
-    for (auto& [key, callback] : callbacks_shifted) {
-        if (fun::input::pressed(key) && fun::input::hold(sf::Keyboard::LShift)) {
-            callback();
-        }
+        callback();
     }
 }

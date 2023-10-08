@@ -122,7 +122,7 @@ void space::action::handle(state_t& state) {
             if (fun::input::pressed(sf::Mouse::Left)) {
                 state.data.mouse.last_grid_pos = grid_pos;
             } else if (fun::input::hold(sf::Mouse::Left) || fun::input::released(sf::Mouse::Left)) {
-                auto color = fun::rgba_t { state.tool.color, 255 };
+                auto color = fun::rgba_t { state.tool.color, 150 };
 
                 auto start = state.data.mouse.last_grid_pos;
                 auto end = grid_pos;
@@ -144,31 +144,47 @@ void space::action::handle(state_t& state) {
                     std::swap(start.y, end.y);
                 }
 
-                auto draw_fn = [&state, start, end, color]<class T>(T canvas) {
+                auto draw_fn = [&state, start, end, color]<class T>(T& canvas) {
                     if (state.tool.mode == space::tool_mode_t::rectangle) {
                         for (auto x = start.x; x <= end.x; x++) {
-                            canvas->set_color({ x, start.y }, color);
-                            canvas->set_color({ x, end.y }, color);
+                            canvas.set_color({ x, start.y }, color);
+                            canvas.set_color({ x, end.y }, color);
                         }
 
                         for (auto y = start.y; y <= end.y; y++) {
-                            canvas->set_color({ start.x, y }, color);
-                            canvas->set_color({ end.x, y }, color);
+                            canvas.set_color({ start.x, y }, color);
+                            canvas.set_color({ end.x, y }, color);
                         }
                     } else {
                         for (int32_t x = start.x; x <= end.x; x++) {
                             for (int32_t y = start.y; y <= end.y; y++) {
-                                canvas->set_color({ x, y }, color);
+                                canvas.set_color({ x, y }, color);
                             }
                         }
                     }
                 };
 
                 if (fun::input::released(sf::Mouse::Left)) {
-                    draw_fn(&state.canvas);
+                    draw_fn(state.canvas);
                 } else {
-                    draw_fn(&state.preview_canvas);
+                    draw_fn(state.preview_canvas);
                 }
+            }
+
+            break;
+        }
+
+        case rectangular_selection: {
+            if (fun::input::pressed(sf::Mouse::Left)) {
+                state.selection.start = grid_pos;
+                state.selection.end = grid_pos;
+                state.selection.selecting = true;
+                state.selection.selected = false;
+            } else if (fun::input::hold(sf::Mouse::Left)) {
+                state.selection.end = grid_pos;
+            } else if (fun::input::released(sf::Mouse::Left)) {
+                state.selection.selecting = false;
+                state.selection.selected = true;
             }
 
             break;
@@ -180,4 +196,29 @@ void space::action::handle(state_t& state) {
     }
 
     state.data.mouse.last_frame_active = mouse_active;
+
+    if (state.selection.selecting || state.selection.selected) {
+        auto color = fun::rgba_t { fun::rgb::white, 150 };
+
+        auto start = state.selection.start;
+        auto end = state.selection.end;
+
+        if (start.x > end.x) {
+            std::swap(start.x, end.x);
+        }
+
+        if (start.y > end.y) {
+            std::swap(start.y, end.y);
+        }
+
+        for (auto x = start.x; x <= end.x; x++) {
+            state.preview_canvas.set_color({ x, start.y }, color);
+            state.preview_canvas.set_color({ x, end.y }, color);
+        }
+
+        for (auto y = start.y; y <= end.y; y++) {
+            state.preview_canvas.set_color({ start.x, y }, color);
+            state.preview_canvas.set_color({ end.x, y }, color);
+        }
+    }
 }

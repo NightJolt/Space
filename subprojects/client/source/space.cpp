@@ -70,7 +70,11 @@ namespace {
 
         space::shortcut::register_key(sf::Keyboard::U, []() {
             state.tool.mode = space::tool_mode_t::rectangle_filled;
-        }, true);
+        }, space::shortcut::key_flags_t::shift);
+
+        space::shortcut::register_key(sf::Keyboard::M, []() {
+            state.tool.mode = space::tool_mode_t::rectangular_selection;
+        });
     }
 }
 

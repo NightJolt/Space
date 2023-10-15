@@ -14,15 +14,15 @@ namespace space {
         fun::render::sprite_t focus_rect;
 
         struct {
-            bool selecting = false;
-            bool selected = false;
+            bool selecting { false };
+            bool selected { false };
             fun::data::grid_pos_t start;
             fun::data::grid_pos_t end;
         } selection;
 
         struct {
             struct {
-                bool last_frame_active = false;
+                bool last_frame_active { false };
                 // fun::vec2f_t last_world_pos;
                 fun::data::grid_pos_t last_grid_pos;
             } mouse;

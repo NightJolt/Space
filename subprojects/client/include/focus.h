@@ -3,8 +3,6 @@
 #include "state.h"
 
 namespace space::focus {
-
-void init();
-void update(state_t&);
-
+    void init(state_t&);
+    void update(state_t&);
 }

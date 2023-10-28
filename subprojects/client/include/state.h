@@ -4,6 +4,7 @@
 #include <FunEngine2D/core/include/render/sprite.h>
 
 #include "tool.h"
+#include "connection.h"
 
 namespace space {
     struct state_t {
@@ -12,6 +13,8 @@ namespace space {
 
         tool_t tool;
         fun::render::sprite_t focus_rect;
+
+        connection::connection_data_t connection_data;
 
         struct {
             bool selecting { false };

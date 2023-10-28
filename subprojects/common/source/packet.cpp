@@ -6,49 +6,90 @@ namespace {
     static constexpr uint32_t max_packet_size { 1024 };
 }
 
-void space::packet_t::reset() {
-    delete[] data;
-    
+space::packet_t::packet_t() {
     data = new uint8_t[max_packet_size];
     cursor = data;
 }
 
-uint32_t space::packet_t::bytes_used() {
+void space::packet_t::reset() {
+    cursor = data;
+}
+
+void space::packet_t::finalize() {
+    *cursor = primitive_type_t::none;
+    cursor++;
+}
+
+int32_t space::packet_t::bytes_used() {
     return cursor - data;
 }
 
-uint32_t space::packet_t::bytes_left() {
-    return max_packet_size - bytes_used();
+int32_t space::packet_t::bytes_left() {
+    return max_packet_size - bytes_used() - 1;
 }
 
-// * 1 byte - cmd, 2 byte - count, count * 11 byte
-void space::packet_t::add_pixel_array(fun::data::grid_pos_t* pos_arr, fun::rgb_t* color_arr, uint16_t count) {
-    *cursor = command_type_t::pixel_array;
-    cursor++;
+bool space::packet_t::can_fit_pixel_array(uint16_t count) {
+    return bytes_left() >= 3 + count * 11;
+}
 
-    *reinterpret_cast <uint16_t*> (cursor) = count;
-    cursor += 2;
+bool space::packet_t::can_fit_line() {
+    return bytes_left() >= 20;
+}
+
+void space::packet_t::add_pixel_array(fun::data::grid_pos_t* pos_arr, fun::rgb_t* color_arr, uint16_t count) {
+    *cursor = primitive_type_t::pixel_array;
+    cursor += sizeof(primitive_type_t);
+
+    *(uint16_t*)cursor = count;
+    cursor += sizeof(uint16_t);
+
+    pixel_t pixel;
 
     for (uint16_t i = 0; i < count; i++) {
-        *reinterpret_cast <fun::data::grid_pos_t*> (cursor) = pos_arr[i];
-        cursor += 8;
+        pixel.pos = pos_arr[i];
+        pixel.color = color_arr[i];
 
-        *reinterpret_cast <fun::rgb_t*> (cursor) = color_arr[i];
-        cursor += 3;
+        *(pixel_t*)cursor = pixel;
+        cursor += sizeof(pixel_t);
     }
 }
 
-// * 1 byte - cmd, 8 byte - start, 8 byte - end, 3 byte - color
 void space::packet_t::add_line(fun::data::grid_pos_t start, fun::data::grid_pos_t end, fun::rgb_t color) {
-    *cursor = command_type_t::line;
-    cursor++;
+    *cursor = primitive_type_t::line;
+    cursor += sizeof(primitive_type_t);
 
-    *reinterpret_cast <fun::data::grid_pos_t*> (cursor) = start;
-    cursor += 8;
+    line_t line;
+    line.start = start;
+    line.end = end;
+    line.color = color;
 
-    *reinterpret_cast <fun::data::grid_pos_t*> (cursor) = end;
-    cursor += 8;
+    *(line_t*)cursor = line;
+    cursor += sizeof(line_t);
+}
 
-    *reinterpret_cast <fun::rgb_t*> (cursor) = color;
-    cursor += 3;
+space::primitive_type_t space::packet_t::get_primitive_type() {
+    return static_cast <primitive_type_t> (*cursor);
+}
+
+fun::iterator_t<space::pixel_t> space::packet_t::get_pixel_array_iterator() {
+    cursor += sizeof(primitive_type_t);
+
+    uint16_t count = *(uint16_t*)cursor;
+    cursor += sizeof(uint16_t);
+
+    pixel_t* begin = (pixel_t*)cursor;
+    pixel_t* end = begin + count;
+    
+    cursor = (uint8_t*)end;
+
+    return { begin, end };
+}
+
+space::line_t space::packet_t::get_line() {
+    cursor += sizeof(primitive_type_t);
+
+    line_t line = *(line_t*)cursor;
+    cursor += sizeof(line_t);
+
+    return line;
 }

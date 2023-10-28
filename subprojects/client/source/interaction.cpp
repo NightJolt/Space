@@ -24,12 +24,16 @@ void space::interaction::handle(state_t& state) {
                 auto color = state.tool.mode == brush ? state.tool.color : fun::rgb::black;
                 
                 if (!state.data.mouse.last_frame_active) {
-                    slave::send_pixel(state, grid_pos, color);
+                    if (state.canvas.get_color(grid_pos) != color) {
+                        slave::send_pixel(state, grid_pos, color);
+                    }
                 } else {
-                    fun::vec2f_t start = state.data.mouse.last_grid_pos;
-                    fun::vec2f_t end = grid_pos;
+                    if (state.data.mouse.last_grid_pos != grid_pos) {
+                        fun::vec2f_t start = state.data.mouse.last_grid_pos;
+                        fun::vec2f_t end = grid_pos;
 
-                    slave::send_line(state, start, end, color);
+                        slave::send_line(state, start, end, color);
+                    }
                 }
 
                 state.data.mouse.last_grid_pos = grid_pos;

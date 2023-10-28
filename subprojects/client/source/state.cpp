@@ -79,6 +79,10 @@ void ::setup_shortcuts(space::state_t& state) {
     space::shortcut::register_key(sf::Keyboard::M, [&state]() {
         state.tool.mode = space::tool_mode_t::rectangular_selection;
     });
+
+    space::shortcut::register_key(sf::Keyboard::D, [&state]() {
+        state.selection.selected = false;
+    }, space::shortcut::key_flags_t::control);
 }
 #pragma endregion
 

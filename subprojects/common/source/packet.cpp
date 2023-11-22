@@ -7,21 +7,25 @@ namespace {
 }
 
 space::packet_t::packet_t() {
-    data = new uint8_t[max_packet_size];
-    cursor = data;
+    data = std::vector<uint8_t>(max_packet_size);
+    cursor = data.data();
 }
 
 void space::packet_t::reset() {
-    cursor = data;
+    cursor = data.data();
 }
 
-void space::packet_t::finalize() {
+uint8_t* space::packet_t::finalize() {
     *cursor = primitive_type_t::none;
     cursor++;
+
+    data.resize(bytes_used());
+
+    return data.data();
 }
 
 int32_t space::packet_t::bytes_used() {
-    return cursor - data;
+    return cursor - data.data();
 }
 
 int32_t space::packet_t::bytes_left() {

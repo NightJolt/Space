@@ -11,7 +11,7 @@ namespace space {
         packet_t();
 
         void reset();
-        void finalize();
+        uint8_t* finalize();
 
         int32_t bytes_used();
         int32_t bytes_left();
@@ -27,7 +27,7 @@ namespace space {
         fun::iterator_t<pixel_t> get_pixel_array_iterator();
         line_t get_line();
         
-        uint8_t* data { nullptr };
+        std::vector<uint8_t> data;
         uint8_t* cursor { nullptr };
     };
 }

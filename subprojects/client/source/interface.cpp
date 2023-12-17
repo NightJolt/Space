@@ -31,7 +31,7 @@ void show_tools_window(space::state_t& state) {
         }
 
         if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
-            ImGui::SetTooltip(text);
+            ImGui::SetTooltip("%s", text);
         }
     };
 

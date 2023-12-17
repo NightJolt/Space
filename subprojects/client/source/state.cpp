@@ -20,7 +20,7 @@ namespace {
 }
 
 #pragma region(local)
-void ::setup_window() {
+void setup_window() {
     fun::render::window_t& window = fun::render::winmgr::get_main_window();
 
     window.set_vsync(false);
@@ -28,7 +28,7 @@ void ::setup_window() {
     window.set_world_view({ 0, 0 }, 64);
     window.set_cursor_visible(false);
 
-    window.register_event_handler(sf::Event::MouseWheelMoved, [](fun::render::window_t& window, const sf::Event& event) {
+    window.register_event_handler(sf::Event::MouseWheelScrolled, [](fun::render::window_t& window, const sf::Event& event) {
         float zoom_value = event.mouseWheel.delta > 0 ? .9f : 1.1f;
         float zoom = window.get_zoom() * zoom_value;
         
@@ -40,7 +40,7 @@ void ::setup_window() {
     ImGui::GetIO().ConfigWindowsMoveFromTitleBarOnly = true;
 }
 
-void ::load_rplace(space::state_t& state) {
+void load_rplace(space::state_t& state) {
     fun::resources::load_texture("place", "../../resources/rplace2023.png");
     auto img = fun::resources::get_texture("place").get_texture()->copyToImage();
 
@@ -51,7 +51,7 @@ void ::load_rplace(space::state_t& state) {
     }
 }
 
-void ::setup_shortcuts(space::state_t& state) {
+void setup_shortcuts(space::state_t& state) {
     space::shortcut::register_key(sf::Keyboard::B, [&state]() {
         state.tool.mode = space::tool_mode_t::brush;
     });

@@ -3,6 +3,7 @@
 #include <FunEngine2D/core/include/globals.h>
 #include <FunEngine2D/core/include/data/gridmap/defs.h>
 #include <FunEngine2D/core/include/iterator.h>
+#include <FunEngine2D/core/include/bytes.h>
 
 #include <common/include/primitive.h>
 
@@ -27,7 +28,7 @@ namespace space {
         fun::iterator_t<pixel_t> get_pixel_array_iterator();
         line_t get_line();
         
-        std::vector<uint8_t> data;
+        fun::bytes_t data;
         uint8_t* cursor { nullptr };
     };
 }

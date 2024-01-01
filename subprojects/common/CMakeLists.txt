@@ -15,3 +15,5 @@ file (
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
 
 target_link_libraries(${PROJECT_NAME} fe2d_core)
+
+fe2d_rpc_gen(space common rpc)

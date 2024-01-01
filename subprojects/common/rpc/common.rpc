@@ -1,0 +1,5 @@
+namespace space
+
+interface server {
+    void send_draw(bytes data)
+}

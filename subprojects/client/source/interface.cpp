@@ -1,5 +1,9 @@
 #include "interface.h"
 
+#include "connection.h"
+
+#include <FunEngine2D/core/include/rpc/rpc.h>
+
 namespace {
     bool brush_window_enabled = false;
     std::array<float, 3> selected_color = { 1.f, 1.f, 1.f };
@@ -8,7 +12,11 @@ namespace {
     bool tools_window_enabled = false;
     void show_tools_window(space::state_t&);
 
-    void draw_nav_bar(space::state_t&);
+    void draw_nav_bar(space::state_t&);bool connect_to_server_window_enabled = false;
+
+    char ip_input[32] = "localhost";
+    char port_input[8] = "8001";
+    void draw_connect_to_server_window(space::state_t&);
 }
 
 #pragma region(local)
@@ -53,15 +61,15 @@ void show_tools_window(space::state_t& state) {
 void draw_nav_bar(space::state_t& state) {
     if (ImGui::BeginMainMenuBar()) {
         if (ImGui::BeginMenu("World")) {
-            // if (!state.client.check_connection() && ImGui::MenuItem("Connect")) {
-            //     connect_to_server_window_enabled = true;
-            // }
-            
-            // if (state.client.check_connection() && ImGui::MenuItem("Disconnect")) {
-            //     state.client.disconnect();
-
-            //     state.canvas.clear();
-            // }
+            if (space::connection::is_connected(state.connection_data)) {
+                if (ImGui::MenuItem("Disconnect")) {
+                    space::connection::disconnect(state.connection_data);
+                }
+            } else {
+                if (ImGui::MenuItem("Connect")) {
+                    connect_to_server_window_enabled = true;
+                }
+            }
 
             ImGui::EndMenu();
         }
@@ -85,12 +93,30 @@ void draw_nav_bar(space::state_t& state) {
         ImGui::EndMainMenuBar();
     }
 }
+
+void draw_connect_to_server_window(space::state_t& state) {
+    ImGui::Begin("Connect", &connect_to_server_window_enabled);
+
+        ImGui::InputText(" Ip Address", ip_input, sizeof ip_input);
+        ImGui::InputText(" Port", port_input, sizeof port_input);
+        ImGui::NewLine();
+
+        if (ImGui::Button("Join")) {
+            if (space::connection::connect(state.connection_data, fun::rpc::addr_t(ip_input, port_input))) {
+                connect_to_server_window_enabled = false;
+                
+                state.canvas.clear();
+            }
+        }
+
+    ImGui::End();
+}
 #pragma endregion
 
 void space::interface::draw(state_t& state) {
     ::draw_nav_bar(state);
 
-    // if (connect_to_server_window_enabled) draw_connect_to_server_window(state);
+    if (connect_to_server_window_enabled) ::draw_connect_to_server_window(state);
     if (brush_window_enabled) ::show_brush_window(state);
     if (tools_window_enabled) ::show_tools_window(state);
     // if (console_window_enabled) draw_console_window(state);

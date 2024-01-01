@@ -12,6 +12,7 @@
 #include "interface.h"
 #include "shortcut.h"
 #include "interaction.h"
+#include "connection.h"
 
 namespace {
     void setup_window();
@@ -93,6 +94,8 @@ void space::state_init(state_t& state) {
     ::setup_shortcuts(state);
     // ::load_rplace();
 
+    connection::init(state.connection_data);
+
     focus::init(state);
 }
 
@@ -101,6 +104,8 @@ void space::state_update(state_t& state) {
     window.move_world_view(fun::input::keyboard_2d() * window.get_zoom() * 50.f * fun::time::delta_time());
 
     state.preview_canvas.clear();
+
+    connection::update(state.connection_data);
 
     focus::update(state);
 

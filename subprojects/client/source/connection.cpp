@@ -22,10 +22,10 @@ void space::connection::disconnect(connection_data_t& data) {
 
 void space::connection::send_packet(connection_data_t& data) {
     data.packet.finalize();
-    if (data.server) data.server->send_draw(data.packet.data);
+    if (is_connected(data)) data.server->send_draw(data.packet.data);
     data.packet.reset();
 }
 
 bool space::connection::is_connected(connection_data_t& data) {
-    return data.server.get() != nullptr && data.server->is_valid();
+    return data.server && data.server->is_valid();
 }

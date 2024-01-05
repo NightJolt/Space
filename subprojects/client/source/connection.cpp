@@ -22,7 +22,7 @@ void space::connection::disconnect(connection_data_t& data) {
 
 void space::connection::send_packet(connection_data_t& data) {
     data.packet.finalize();
-    if (is_connected(data)) data.server->send_draw(data.packet.data);
+    if (is_connected(data)) data.server->send_draw(data.packet.get_data());
     data.packet.reset();
 }
 

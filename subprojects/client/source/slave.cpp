@@ -54,6 +54,10 @@ void space::slave::process_packet(state_t& state, packet_t& packet) {
                 break;
             }
 
+            case primitive_type_t::chunk: {
+                break;
+            }
+
             case primitive_type_t::none: {
                 break;
             }

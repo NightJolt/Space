@@ -2,4 +2,5 @@ namespace space
 
 interface server {
     void send_draw(bytes data)
+    bytes get_chunk(i32 x, i32 y)
 }

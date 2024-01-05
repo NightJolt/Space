@@ -9,6 +9,7 @@ namespace space {
         none,
         pixel_array,
         line,
+        chunk,
     };
 
 #pragma pack(push, 1)

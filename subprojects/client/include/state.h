@@ -8,8 +8,8 @@
 
 namespace space {
     struct state_t {
-        fun::render::meshmap_t<128, 1> canvas { fun::render::texture_t {}, fun::rgb::black };
-        fun::render::meshmap_t<128, 1, true> preview_canvas { fun::render::texture_t {}, fun::rgba::transparent };
+        fun::render::meshmap_t<constants::chunk_size, 1> canvas { fun::render::texture_t {}, fun::rgb::black };
+        fun::render::meshmap_t<constants::chunk_size, 1, true> preview_canvas { fun::render::texture_t {}, fun::rgba::transparent };
 
         tool_t tool;
         fun::render::sprite_t focus_rect;
